@@ -1,0 +1,86 @@
+h1 {
+    font-family: sans-serif;
+    font-size: 150px;
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    top: 20px;
+    margin-bottom: 20px;
+}
+
+#gameContainer {
+    text-align: center;
+}
+
+#highScoreContainer {
+    text-align: center;
+    position: relative;
+    right: 150px;
+}
+
+#highScoreText {
+    font-family: sans-serif;
+    font-size: 30px;
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+}
+
+#highScore {
+    font-family: sans-serif;
+    font-size: 30px;
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+}
+
+#playerScoreContainer {
+    text-align: center;
+    position: relative;
+    left: 185px;
+}
+
+#playerScoreText {
+    font-family: sans-serif;
+    font-size: 30px;
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+}
+#playerScore {
+    font-family: sans-serif;
+    font-size: 30px;
+    margin: 0px;
+    padding: 0px;
+    display: inline;
+}
+
+#gameBoard {
+    border: 3px solid;
+}
+
+a {
+    text-decoration: none;
+}
+
+.fa-linkedin {
+    position: relative;
+    right: 2%;
+    color: #0072b1;
+}
+
+.fa-envelope {
+    color: black;
+}
+
+.fa-github{
+    position: relative;
+    left: 2%;
+    color: #171515;
+}
+
+footer {
+    margin: 20px;
+    text-align: center;
+}
