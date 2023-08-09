@@ -9,6 +9,7 @@ const compPaddleColor = "red";
 const paddleColor = "blue";
 const ballColor = "black";
 const unitSize = 25;
+let timeoutID;
 let running = false;
 let yVelocity = 0;
 let highScoreNum = 0;
@@ -53,8 +54,7 @@ function gameStart(){
 };
 function nextTick(){
     if (running = true) {
-        setTimeout(()=>{
-
+        timeoutID = setTimeout(()=>{
             clearBall();
             checkBallSurroundings();
             checkScore();
@@ -179,13 +179,42 @@ function clearPaddle(){
     })
 };
 function displayGameOver(){
-    ctx.font = "75px sans-serif";
+    running = false;
+    ctx.font = "70px sans-serif";
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ctx.fillText("GAME OVER", gameWidth / 2, gameHeight / 2);
     ctx.font = "25px sans-serif";
     ctx.fillText("PRESS 'SPACE' TO RESTART", gameWidth / 2, gameHeight - 200);  
-    running = false;
+    window.addEventListener("keydown", resetGame);
+};
+function resetGame(event){
+    const keyPressed = event.keyCode;
+    window.removeEventListener("keydown", resetGame);
+    if (keyPressed == 32) {
+        ctx.fillStyle = boardColor;
+        ctx.fillRect(0, 0, gameWidth, gameHeight);
+        paddle = [
+            {x:gameWidth - unitSize, y:0},
+            {x:gameWidth - unitSize, y:unitSize},
+            {x:gameWidth - unitSize, y:unitSize * 2},
+            {x:gameWidth - unitSize, y:unitSize * 3},
+            {x:gameWidth - unitSize, y:unitSize * 4}
+        ];
+        compPaddle = [
+            {x:0, y:gameHeight - unitSize},
+            {x:0, y:gameHeight - unitSize * 2},
+            {x:0, y:gameHeight - unitSize * 3},
+            {x:0, y:gameHeight - unitSize * 4},
+            {x:0, y:gameHeight - unitSize * 5}
+        ];
+        score = 0;
+        ball = {x:250, y:275};
+        ballXVelocity = unitSize;
+        ballYVelocity = -unitSize;
+        clearTimeout(timeoutID);
+        gameStart();
+    }
 };
 
 function compPaddleLayer(sector){
@@ -344,7 +373,7 @@ function checkScore(){
             scoreNum += 1;
             playerScore.textContent = scoreNum;
             break;
-        case(ball > gameWidth):
+        case(ball.x > gameWidth):
             displayGameOver();
             break;
         case(scoreNum > highScoreNum): //checks if score is greater than highscore
