@@ -10,7 +10,9 @@ h1 {
 }
 
 #gameContainer {
+    justify-content: center;
     text-align: center;
+    display: flex;
 }
 
 #highScoreContainer {
@@ -58,6 +60,29 @@ h1 {
 
 #gameBoard {
     border: 3px solid;
+    position: relative;
+    right: 95px;
+}
+
+#diffButtons button{
+    display: block;
+    width: 100%;
+    padding: 25px 50px;
+    position: relative;
+    top: 125px;
+    border: 3px solid black;
+    right: 110px;
+    font-family: sans-serif;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#diffButtons button:not(:last-child) {
+    border-bottom: none;
+}
+
+#diffButtons button:hover {
+    background-color: gray;
 }
 
 a {

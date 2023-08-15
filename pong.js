@@ -2,6 +2,9 @@ const gameBoard = document.querySelector("#gameBoard");
 const ctx = gameBoard.getContext("2d");
 const highScore = document.querySelector("#highScore");
 const playerScore = document.querySelector("#playerScore");
+const easyDiffBtn = document.querySelector("#easyBtn");
+const mediumDiffBtn = document.querySelector("#mediumBtn");
+const hardDiffBtn = document.querySelector("#hardBtn");
 const gameWidth =  gameBoard.width;
 const gameHeight = gameBoard.height;
 const boardColor = "white";
@@ -14,6 +17,9 @@ let running = false;
 let yVelocity = 0;
 let highScoreNum = 0;
 let scoreNum = 0;
+let easy = 0;
+let medium = 0;
+let hard = 1;
 let paddle = [
     {x:gameWidth - unitSize, y:0},
     {x:gameWidth - unitSize, y:unitSize},
@@ -41,6 +47,9 @@ window.addEventListener("keydown", function(e) {
 }, false);
 
 window.addEventListener("keydown", changeDirection);
+easyDiffBtn.addEventListener("click", easyDifficulty);
+mediumDiffBtn.addEventListener("click", mediumDifficulty);
+hardDiffBtn.addEventListener("click", hardDifficulty);
 
 gameStart();
 
@@ -53,14 +62,14 @@ function gameStart(){
     nextTick();
 };
 function nextTick(){
-    if (running = true) {
+    if (running == true) {
         timeoutID = setTimeout(()=>{
             clearBall();
             checkBallSurroundings();
+            checkDifficulty();
             checkScore();
             moveBall();
             drawBall();
-            detectBallTrajectory();
             nextTick();
         }, 100);
     }
@@ -91,8 +100,8 @@ function moveBall(){
     ball.y += ballYVelocity;
 };
 function checkBallSurroundings(){
-    //if ball hits top left side of player paddle
     paddle.forEach(paddlePart => {
+        //if ball hits left side of player paddle
         if (ball.x + unitSize == paddlePart.x && ball.y == paddlePart.y) {
             ballHitPaddle();
         }
@@ -126,8 +135,14 @@ function checkBallSurroundings(){
             ballYVelocity = unitSize;
             ballXVelocity = -unitSize;
             break;
+        case(ball.x > gameWidth):
+            displayGameOver();
+            break;
+        case(ball.x < 0):
+            displayScored();
+            break;
     }
-};
+};s
 function ballHitPaddle(){
     ballXVelocity = -unitSize;
 };
@@ -186,37 +201,59 @@ function displayGameOver(){
     ctx.fillText("GAME OVER", gameWidth / 2, gameHeight / 2);
     ctx.font = "25px sans-serif";
     ctx.fillText("PRESS 'SPACE' TO RESTART", gameWidth / 2, gameHeight - 200);  
-    window.addEventListener("keydown", resetGame);
+    window.addEventListener("keydown", hardReset);
 };
-function resetGame(event){
+function displayScored(){
+    running = false;
+    scoreNum += 1;
+    playerScore.textContent = scoreNum;
+    ctx.font = "70px sans-serif";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.fillText("SCORED!", gameWidth / 2, gameHeight / 2);
+    ctx.font = "25px sans-serif";
+    ctx.fillText("PRESS 'SPACE' TO CONTINUE", gameWidth / 2, gameHeight - 200);  
+    window.addEventListener("keydown", softReset);
+};
+function resetGame(){
+    ctx.fillStyle = boardColor;
+    ctx.fillRect(0, 0, gameWidth, gameHeight);
+    paddle = [
+        {x:gameWidth - unitSize, y:0},
+        {x:gameWidth - unitSize, y:unitSize},
+        {x:gameWidth - unitSize, y:unitSize * 2},
+        {x:gameWidth - unitSize, y:unitSize * 3},
+        {x:gameWidth - unitSize, y:unitSize * 4}
+    ];
+    compPaddle = [
+        {x:0, y:gameHeight - unitSize},
+        {x:0, y:gameHeight - unitSize * 2},
+        {x:0, y:gameHeight - unitSize * 3},
+        {x:0, y:gameHeight - unitSize * 4},
+        {x:0, y:gameHeight - unitSize * 5}
+    ];
+    ball = {x:250, y:275};
+    ballXVelocity = unitSize;
+    ballYVelocity = -unitSize;
+    clearTimeout(timeoutID); 
+    gameStart();
+};
+function hardReset(event){
     const keyPressed = event.keyCode;
-    window.removeEventListener("keydown", resetGame);
+    window.removeEventListener("keydown", hardReset);
     if (keyPressed == 32) {
-        ctx.fillStyle = boardColor;
-        ctx.fillRect(0, 0, gameWidth, gameHeight);
-        paddle = [
-            {x:gameWidth - unitSize, y:0},
-            {x:gameWidth - unitSize, y:unitSize},
-            {x:gameWidth - unitSize, y:unitSize * 2},
-            {x:gameWidth - unitSize, y:unitSize * 3},
-            {x:gameWidth - unitSize, y:unitSize * 4}
-        ];
-        compPaddle = [
-            {x:0, y:gameHeight - unitSize},
-            {x:0, y:gameHeight - unitSize * 2},
-            {x:0, y:gameHeight - unitSize * 3},
-            {x:0, y:gameHeight - unitSize * 4},
-            {x:0, y:gameHeight - unitSize * 5}
-        ];
-        score = 0;
-        ball = {x:250, y:275};
-        ballXVelocity = unitSize;
-        ballYVelocity = -unitSize;
-        clearTimeout(timeoutID);
-        gameStart();
+        scoreNum = 0;
+        playerScore.textContent = scoreNum;
+        resetGame();
     }
 };
-
+function softReset(event){
+    const keyPressed = event.keyCode; 
+    window.removeEventListener("keydown", softReset);
+    if (keyPressed == 32) {
+        resetGame();
+    }
+};
 function compPaddleLayer(sector){
     switch(true){
         case(compPaddle[4].y == 0): //first layer
@@ -366,23 +403,47 @@ function moveUpCompPaddle(number){
         drawCompPaddle();
     }
 };
-
-function checkScore(){
+function easyDifficulty(){
+    easy = 1;
+    medium = 0;
+    hard = 0;
+};
+function mediumDifficulty(){
+    easy = 0;
+    medium = 1;
+    hard = 0;
+};
+function hardDifficulty(){
+    easy = 0;
+    medium = 0;
+    hard = 1;
+};
+function checkDifficulty(){
+    const randNum = (Math.random() * 100) + 1;
     switch(true){
-        case(ball.x < 0): //checks if ball went past computer paddle
-            scoreNum += 1;
-            playerScore.textContent = scoreNum;
+        case(easy == 1):
+            if (randNum <= 60) {
+                detectBallTrajectory();
+            }
             break;
-        case(ball.x > gameWidth):
-            displayGameOver();
+        case(medium == 1):
+            if (randNum <= 75) {
+                detectBallTrajectory();
+            }
             break;
-        case(scoreNum > highScoreNum): //checks if score is greater than highscore
-            highScoreNum = scoreNum;
-            highScore.textContent = highScoreNum;
+        case(hard == 1):
+            if (randNum <= 95) {
+                detectBallTrajectory();
+            }
             break;
     }
-    
 };
+function checkScore(){
+    if (scoreNum > highScoreNum){
+        highScore.textContent = scoreNum;
+    }
+}
+
 /*function drawGrid(){
     ctx.fillStyle = "white";
     ctx.strokeStyle = "black";
